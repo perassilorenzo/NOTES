@@ -1,0 +1,132 @@
+/* ================================================
+   TETRIS - CSS versione DIV
+   ================================================ */
+
+/* --- Pagina --- */
+body {
+  min-height: 100vh;
+  background: #121212;
+}
+
+/* -----------------------------------------------
+   CAMPO DI GIOCO
+
+   display: grid  →  attiva CSS Grid
+   grid-template-columns: repeat(10, 30px)
+     →  crea 10 colonne larghe 30px ciascuna
+   grid-template-rows: repeat(20, 30px)
+     →  crea 20 righe alte 30px ciascuna
+
+   I 200 div figli si posizionano automaticamente
+   da sinistra a destra, dall'alto in basso.
+   ----------------------------------------------- */
+#campo {
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows:    repeat(20, 30px);
+  width:  300px;   /* 10 × 30px */
+  height: 600px;   /* 20 × 30px */
+  background: #111;
+}
+
+/* Wrapper che aggiunge il bordo giallo attorno al campo.
+   position: relative  →  serve per l'overlay di pausa */
+#campo-wrapper {
+  position: relative;
+  display: inline-block;   /* si adatta alle dimensioni di #campo */
+  border: 3px solid #ffc107;
+  box-shadow: 0 0 24px rgba(255, 193, 7, 0.4);
+}
+
+/* -----------------------------------------------
+   LE CELLE
+
+   Ogni cella è un <div> di 30×30px.
+   Di default è grigio scuro (vuota).
+   ----------------------------------------------- */
+.cella {
+  width:  30px;
+  height: 30px;
+  background: #111;
+  border: 1px solid #1c1c1c;   /* griglia quasi invisibile */
+  box-sizing: border-box;
+}
+
+/* Cella occupata da un blocco fisso o dal pezzo corrente.
+   Il colore viene impostato da JS: div.style.backgroundColor */
+.cella.piena {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Ghost piece: ombra semitrasparente che mostra
+   dove atterrerà il pezzo */
+.cella.ghost {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* -----------------------------------------------
+   OVERLAY DI PAUSA
+
+   position: absolute  →  si sovrappone al campo
+   top/left/width/height  →  copre tutto il campo
+   display: flex + align/justify  →  testo centrato
+   ----------------------------------------------- */
+#overlay-pausa {
+  position: absolute;
+  top:    0;
+  left:   0;
+  width:  300px;
+  height: 600px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffc107;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items:     center;
+  justify-content: center;
+}
+
+/* -----------------------------------------------
+   ANTEPRIMA PROSSIMO PEZZO
+
+   Griglia 4×4 di div piccoli (24px × 24px)
+   ----------------------------------------------- */
+#anteprima {
+  display: grid;
+  grid-template-columns: repeat(4, 24px);
+  grid-template-rows:    repeat(4, 24px);
+  width:  96px;
+  height: 96px;
+  margin: 0 auto;   /* centra orizzontalmente */
+  background: #1a1a1a;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+
+.cella-anteprima {
+  width:  24px;
+  height: 24px;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* -----------------------------------------------
+   RESPONSIVE: schermi < 576px (smartphone)
+   ----------------------------------------------- */
+@media (max-width: 576px) {
+  #campo {
+    grid-template-columns: repeat(10, 24px);
+    grid-template-rows:    repeat(20, 24px);
+    width:  240px;
+    height: 480px;
+  }
+  .cella {
+    width:  24px;
+    height: 24px;
+  }
+  #overlay-pausa {
+    width:  240px;
+    height: 480px;
+  }
+}

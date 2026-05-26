@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tetris - Versione DIV</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+  <!-- CSS per la versione DIV -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="bg-dark text-white">
+
+  <!-- ==================
+       BARRA DI NAVIGAZIONE
+       ================== -->
+  <nav class="navbar navbar-dark bg-black mb-3">
+    <div class="container-fluid justify-content-center gap-2">
+      <span class="navbar-brand fs-2 fw-bold text-warning mb-0">🎮 TETRIS</span>
+      <!--
+        Badge Bootstrap: piccola etichetta colorata.
+        Qui segnaliamo che questa è la versione con i DIV.
+      -->
+      <span class="badge bg-warning text-dark fs-6">versione DIV</span>
+    </div>
+  </nav>
+
+  <!-- ==================
+       CORPO PRINCIPALE
+       ================== -->
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-start g-3">
+
+      <!-- ---- COLONNA SINISTRA: punteggi ---- -->
+      <div class="col-auto">
+
+        <div class="card bg-secondary text-white mb-3" style="width: 160px;">
+          <div class="card-body text-center">
+            <h6 class="card-title text-warning">PUNTEGGIO</h6>
+            <p class="fs-4 fw-bold mb-0" id="score">0</p>
+          </div>
+        </div>
+
+        <div class="card bg-secondary text-white mb-3" style="width: 160px;">
+          <div class="card-body text-center">
+            <h6 class="card-title text-warning">LIVELLO</h6>
+            <p class="fs-4 fw-bold mb-0" id="level">1</p>
+          </div>
+        </div>
+
+        <div class="card bg-secondary text-white mb-3" style="width: 160px;">
+          <div class="card-body text-center">
+            <h6 class="card-title text-warning">RIGHE</h6>
+            <p class="fs-4 fw-bold mb-0" id="lines">0</p>
+          </div>
+        </div>
+
+        <div class="card bg-secondary text-white mb-3" style="width: 160px;">
+          <div class="card-body text-center">
+            <h6 class="card-title text-warning">RECORD</h6>
+            <p class="fs-5 fw-bold mb-0" id="highscore">0</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---- COLONNA CENTRALE: campo di gioco ---- -->
+      <div class="col-auto text-center">
+
+        <!--
+          campo-wrapper: contiene il campo e l'overlay di pausa.
+          Serve position:relative per posizionare l'overlay sopra.
+
+          DIFFERENZA con la versione Canvas:
+            Canvas → <canvas id="tetrisCanvas"></canvas>
+            DIV    → <div id="campo"></div>
+          
+          Il JS creerà 200 <div> dentro #campo (10 colonne × 20 righe).
+          CSS Grid li disporrà automaticamente a griglia.
+        -->
+        <div id="campo-wrapper">
+          <div id="campo">
+            <!-- I 200 div vengono creati dal JavaScript -->
+          </div>
+
+          <!-- Overlay visibile solo in pausa (d-none = nascosto) -->
+          <div id="overlay-pausa" class="d-none">⏸ PAUSA</div>
+        </div>
+
+        <!-- Pulsanti -->
+        <div class="d-flex justify-content-center gap-2 mt-3">
+          <button id="btnStart"   class="btn btn-success fw-bold">▶ Inizia</button>
+          <button id="btnPause"   class="btn btn-warning fw-bold" disabled>⏸ Pausa</button>
+          <button id="btnRestart" class="btn btn-danger  fw-bold" disabled>🔄 Ricomincia</button>
+        </div>
+
+        <!-- Pulsanti touch (solo su schermi piccoli) -->
+        <div class="d-flex justify-content-center gap-3 mt-3 d-md-none">
+          <button class="btn btn-outline-light   btn-lg" id="btnLeft">◀</button>
+          <button class="btn btn-outline-light   btn-lg" id="btnDown">▼</button>
+          <button class="btn btn-outline-light   btn-lg" id="btnRight">▶</button>
+          <button class="btn btn-outline-warning btn-lg" id="btnRotate">↻</button>
+        </div>
+
+      </div>
+
+      <!-- ---- COLONNA DESTRA: anteprima + istruzioni ---- -->
+      <div class="col-auto">
+
+        <div class="card bg-secondary text-white mb-3" style="width: 160px;">
+          <div class="card-body text-center">
+            <h6 class="card-title text-warning">PROSSIMO</h6>
+            <!--
+              Anche qui: nella versione Canvas c'era <canvas id="nextCanvas">
+              Ora usiamo un <div id="anteprima"> con una griglia 4×4 di div.
+            -->
+            <div id="anteprima"></div>
+          </div>
+        </div>
+
+        <div class="card bg-secondary text-white" style="width: 160px;">
+          <div class="card-body">
+            <h6 class="card-title text-warning text-center">CONTROLLI</h6>
+            <ul class="list-unstyled small mb-0">
+              <li>⬅ ➡  Muovi</li>
+              <li>⬆    Ruota</li>
+              <li>⬇    Scendi</li>
+              <li><kbd>Spazio</kbd> Caduta rapida</li>
+              <li><kbd>P</kbd> Pausa</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================
+       MODAL GAME OVER
+       ================== -->
+  <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border border-warning">
+
+        <div class="modal-header border-warning">
+          <h5 class="modal-title text-warning fw-bold">💀 GAME OVER</h5>
+        </div>
+
+        <div class="modal-body text-center">
+          <p class="fs-5">Punteggio: <span id="finalScore" class="text-warning fw-bold"></span></p>
+          <p id="newRecordMsg" class="text-success fw-bold d-none">🏆 Nuovo Record!</p>
+        </div>
+
+        <div class="modal-footer border-warning justify-content-center">
+          <button type="button" class="btn btn-warning fw-bold" id="btnPlayAgain">🔄 Gioca ancora</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS del gioco (versione DIV) -->
+  <script src="js/tetris_div.js"></script>
+
+</body>
+</html>
